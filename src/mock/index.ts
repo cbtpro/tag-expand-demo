@@ -18,6 +18,7 @@ import { isDev } from '@/config';
 if (isDev) {
   import('./api/index/authority');
   import('./api/index/test');
+  import('./api/index/tags');
 
   Mockjs.setup({
     timeout: 800,

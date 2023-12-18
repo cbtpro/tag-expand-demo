@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import HelloWorld from '@/components/HelloWorld.vue';
-import FlexContainerDemo from '@/components/FlexContainerDemo.vue';
+import TagsDemo from '@/components/tags-demo/index.vue';
 </script>
 
 <template>
-  <FlexContainerDemo />
+  <TagsDemo />
   <div>
     <a href="https://vitejs.dev" target="_blank">
       <img src="/vite.svg" class="logo" alt="Vite logo" />
