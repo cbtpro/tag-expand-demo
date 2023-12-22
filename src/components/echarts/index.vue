@@ -16,7 +16,7 @@
 
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref } from 'vue';
-import { useThrottleFn } from '@vueuse/core'
+import { useThrottleFn } from '@vueuse/core';
 import * as echarts from 'echarts/core';
 import { BarChart, LineChart } from 'echarts/charts';
 import {
@@ -43,6 +43,7 @@ import type {
   DatasetComponentOption,
 } from 'echarts/components';
 import type { ComposeOption } from 'echarts/core';
+import { TopLevelFormatterParams } from 'echarts/types/dist/shared';
 
 // 通过 ComposeOption 来组合出一个只有必须组件和图表的 Option 类型
 type ECOption = ComposeOption<
@@ -83,22 +84,22 @@ const option: ECOption = {
   },
   tooltip: {
     // trigger: 'axis',
-    formatter: (params) => {
+    formatter: (params: TopLevelFormatterParams) => {
       try {
         if (Array.isArray(params)) {
           const [data] = params;
           const { name, value } = data;
-          chartsCurrentData.value = { name, value };
+          chartsCurrentData.value = { name, value: value as number };
         } else {
           const { name, value } = params;
-          chartsCurrentData.value = { name, value };
+          chartsCurrentData.value = { name, value: value as number };
         }
       } catch (err) {
         console.log(err);
       }
       return 1;
     },
-  },
+  } as any,
   axisPointer: {
     show: true,
     type: 'shadow',
@@ -122,35 +123,36 @@ const option: ECOption = {
 
 const echartsRef = ref<HTMLDivElement>();
 
-let myCharts: echarts.ECharts;
+let myCharts: echarts.ECharts | undefined = undefined;
 const initECharts = () => {
   if (echartsRef.value) {
-    myCharts = echarts.init(echartsRef.value, null, {
+    myCharts = echarts.init(echartsRef.value, undefined, {
       renderer: 'canvas',
     });
     if (myCharts) {
       myCharts.setOption(option);
-      myCharts.on('click', (e) => {
+      myCharts.on('click', (e: echarts.ECElementEvent) => {
         console.log(e);
       });
       // 鼠标滑过时变成小手
-      myCharts.getZr().on('mousemove', param => {
-        const pointInPixel= [param.offsetX, param.offsetY];
-        if (myCharts.containPixel('grid',pointInPixel)) {//若鼠标滑过区域位置在当前图表范围内 鼠标设置为小手
-          myCharts.getZr().setCursorStyle('pointer')
-        }else{
-          myCharts.getZr().setCursorStyle('default')
+      myCharts.getZr().on('mousemove', (param: echarts.ElementEvent) => {
+        const pointInPixel = [param.offsetX, param.offsetY];
+        if (myCharts?.containPixel('grid', pointInPixel)) {
+          //若鼠标滑过区域位置在当前图表范围内 鼠标设置为小手
+          myCharts.getZr().setCursorStyle('pointer');
+        } else {
+          myCharts?.getZr().setCursorStyle('default');
         }
-      })
+      });
       // 点击区域增大
-      myCharts.getZr().on('click', params=>{
-        const pointInPixel= [params.offsetX, params.offsetY];
-        if (myCharts.containPixel('grid',pointInPixel)) {
+      myCharts.getZr().on('click', (params: echarts.ElementEvent) => {
+        const pointInPixel = [params.offsetX, params.offsetY];
+        if (myCharts?.containPixel('grid', pointInPixel) && chartsCurrentData.value) {
           const { name, value } = chartsCurrentData.value;
           // 点击的逻辑
           console.log(name, value);
         }
-      })
+      });
     }
   }
 };

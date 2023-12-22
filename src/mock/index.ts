@@ -15,14 +15,33 @@
 import Mockjs from 'mock2js';
 import { isDev } from '@/config';
 
-if (isDev) {
-  import('./api/index/authority');
-  import('./api/index/test');
-  import('./api/index/tags');
-
-  Mockjs.setup({
-    timeout: 800,
-  });
-
-  console.log('mock initial complete!');
+interface IMockOptions {
+  timeout?: number;
 }
+const defaultTimeout = 800;
+const defaultMockOptions: IMockOptions = {
+  timeout: defaultTimeout,
+};
+export const initMock = (options: IMockOptions = defaultMockOptions) => {
+  return new Promise((resolve, reject) => {
+    if (!isDev) {
+      reject('不是dev环境，不启用mock');
+      return;
+    }
+    const { timeout = defaultTimeout } = options;
+    const promises = [
+      import('./api/index/authority'),
+      import('./api/index/test'),
+      import('./api/index/tags'),
+    ];
+
+    Mockjs.setup({
+      timeout,
+    });
+    Promise.allSettled(promises).then(results => {
+      console.log(results);
+      console.log('mock initial complete!');
+      resolve('mock initial complete!');
+    });
+  });
+};

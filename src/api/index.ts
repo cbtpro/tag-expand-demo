@@ -17,7 +17,6 @@ import defaultConfig from './config.default';
 import { useInterceptors } from './interceptors';
 
 export const useApi = () => {
-  debugger;
   // 使用默认配置创建请求实例
   const axiosInstance = axios.create(defaultConfig);
 

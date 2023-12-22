@@ -80,8 +80,7 @@ const mockTags = [
 ];
 
 const response = (options: IMockRequestOptions) => {
-  debugger;
+  console.log(options);
   return builder<ITag[]>(randomTakeArrayFromArray(mockTags, random(3, mockTags.length)));
 };
-debugger;
 Mock.mock(/\/api\/index\/tags/, 'get', response);

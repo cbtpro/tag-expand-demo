@@ -6,9 +6,9 @@ const serverOptions: ServerOptions = {
   host: true,
   port: 9999,
   proxy: {
-    '/api': {
+    '/gateway': {
       target: 'http://127.0.0.1:9999',
-      changeOrigin: true,
+      changeOrigin: false,
       rewrite: path => path.replace(/^\/gateway/, ''),
       configure: (proxy, options) => {
         // proxy 是 'http-proxy' 的实例
